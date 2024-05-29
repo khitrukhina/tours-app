@@ -24,7 +24,9 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
           product_data: {
             name: `${tour.name} Tour`,
             description: tour.summary,
-            images: [`https://www.natours.dev/img/tours/${tour.imageCover}`],
+            images: [
+              `${req.protocol}://${req.get('host')}/img/tours/${tour.imageCover}`,
+            ],
           },
         },
         quantity: 1,
@@ -48,11 +50,12 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   // route handler implementation
   // const signature = req.headers['stripe-signature']
   // const event = stripe.webhooks.constructEvent(req.body, signature, secret)
-  // if (event.type === 'checkout.session.complete)
+  // if (event.type === 'checkout.session.completed)
+  // send response to stripe
   // const session = event.data.object;
   // session.client_reference_id is tour id
   // await User.findOne({ email: session.customer_email }).id - user id
-  // price is in session.line_items[0].amount / 100
+  // price is in session.display_items[0].amount / 100
   // await Booking.create ...
   const { tour, user, price } = req.query;
   if (!tour || !user || !price) {
