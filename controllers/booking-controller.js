@@ -30,6 +30,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
         quantity: 1,
       },
     ],
+    // no query params with web hooks
     success_url: `${req.protocol}://${req.get('host')}/?tour=${tourId}&user=${req.user.id}&price=${tour.price}`,
     cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
     customer_email: req.user.email,
@@ -41,7 +42,18 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   });
 });
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
-  // temporary solution
+  // temporary solution - with deployed app u need to use stripe webhooks to redirect after completed checkout session
+  // after that u need to create the route and its handler which stripe will use after completed checkout
+  // body needs to be raw, not converted by body parser but by raw parser - express.raw({ type: 'application/json' })
+  // route handler implementation
+  // const signature = req.headers['stripe-signature']
+  // const event = stripe.webhooks.constructEvent(req.body, signature, secret)
+  // if (event.type === 'checkout.session.complete)
+  // const session = event.data.object;
+  // session.client_reference_id is tour id
+  // await User.findOne({ email: session.customer_email }).id - user id
+  // price is in session.line_items[0].amount / 100
+  // await Booking.create ...
   const { tour, user, price } = req.query;
   if (!tour || !user || !price) {
     return next();

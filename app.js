@@ -21,10 +21,12 @@ const bookingRouter = require('./routes/booking-routes');
 
 const app = express();
 
+// for header x-forwarded-proto set
 app.enable('trust proxy');
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+
 // serving static files from folder
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -57,7 +59,13 @@ app.use(mongoSanitize());
 
 // data sanitization against xss. clean malicious html code with js attached to it
 app.use(xss());
+
+// implementing cors, to be able to use api from any origin
+// access-control-allow-origin *
+// app.use({ origin: '' }) - allow to exact origin
+// for get and post
 app.use(cors());
+// for options requests used with non-simple requests on the pre-flight phase
 app.options('*', cors());
 
 //prevents param pollution (cleans query strings from duplicates, last one remains)

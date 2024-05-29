@@ -12,7 +12,7 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-const createSendToken = (user, code, res) => {
+const createSendToken = (user, code, res, req) => {
   const token = signToken(user._id);
 
   const cookieOptions = {
@@ -22,12 +22,10 @@ const createSendToken = (user, code, res) => {
     ),
     // cookie cannot be accessed or modified from browser
     httpOnly: true,
-  };
-
-  if (process.env.NODE_ENV === 'production') {
     // sent only with encrypted connection
-    cookieOptions.secure = true;
-  }
+    // sec is heroku specific cause there will be no secure prop
+    secure: req.secure || req.headers('x-forwarded-proto') === 'https',
+  };
 
   res.cookie('jwt', token, cookieOptions);
 
@@ -55,7 +53,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   const url = `${req.protocol}://${req.get('host')}/me`;
 
   await new Email(user, url).sendWelcome();
-  createSendToken(user, 201, res);
+  createSendToken(user, 201, res, req);
 });
 
 exports.logout = (req, res, next) => {
@@ -79,7 +77,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, res, req);
 });
 
 exports.protectUnauth = catchAsync(async (req, res, next) => {
@@ -202,7 +200,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // with validation
   await user.save();
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, res, req);
 });
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // get user (select is used to retrieve password which is usually hidden
@@ -223,5 +221,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // save and not update to run middlewares
   await user.save();
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, res, req);
 });
