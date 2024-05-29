@@ -18,7 +18,6 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    console.log(req.files);
     const data = req.body;
     if (req.files.images && req.files.images.length) {
       data.images = req.files.images.map((file) => file.filename);

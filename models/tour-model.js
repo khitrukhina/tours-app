@@ -197,8 +197,6 @@ tourSchema.pre(/^find/, function (next) {
 // post middlewares running after all pre middlewares
 // tourSchema.post('save', function (doc, next) {
 //   // this object is just saved document
-//   console.log(doc);
-//
 //   next();
 // });
 

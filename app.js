@@ -1,7 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
-
+const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const hpp = require('hpp');
@@ -73,6 +73,8 @@ app.use(
     ],
   }),
 );
+// compress text sent to client
+app.use(compression());
 
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);

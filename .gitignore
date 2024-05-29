@@ -24,6 +24,7 @@ bundle.js
 
 # misc
 /.sass-cache
+.cache/
 /connect.lock
 /coverage
 /libpeerconnection.log
